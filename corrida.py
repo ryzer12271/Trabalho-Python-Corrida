@@ -6,4 +6,16 @@ def menu_cadastrado():
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 while True:
-    
+    opcao = menu_cadastrado()
+
+    if opcao == "1":
+     print("Fazer inscrição")
+
+    elif opcao == "2":
+       print("Calcular resultado")
+
+    elif opcao == "3":
+       print("Sair do Sistema")
+
+    else:
+       print("Opção inválida!")
