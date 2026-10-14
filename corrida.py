@@ -60,19 +60,32 @@ def verificar_premiacao(idade, distancia, segundos):
         return False
 
     return segundos <= limite
-
-
-def calcular_resultado():
-    
-
+#o valor a se pagar para inscrição
+def valor_inscricao(lote, distancia):
+    if lote == 1:
+        preco_inicial = 80.00
+    elif lote == 2:
+        preco_inicial = 100.00
+    else:
+        preco_inicial = 0.00
+    if distancia == 10:
+        preco_inicial += 20
+    return preco_inicial
+#variáveis para armazenar o numero de usuarios e o total de faturamento
+total_inscricoes = 0
+total_arrecadado = 0.00
+def fazer_inscricao():
+    nome = str(input("Digite seu nome: ")).strip().upper()
+    sobrenome = str(input("Digite seu sobrenome: ")).strip().upper()
     while True:
         try:
-            idade = int(input("Digite sua idade: "))
-            if idade >= 16:
-                break
-            print("Idade invaida e necessário ter 16 anos ou mais")
+            idade = int(input("qual sua idade: "))
+            if idade < 16:
+                print("Idade inválida! Tem de ter 16 anos ou mais.")
+            else:
+                    break
         except ValueError:
-            print("Digite uma idade valida")
+            print("Erro: Digite apenas números inteiros.")
 
     while True:
         try:
@@ -82,6 +95,49 @@ def calcular_resultado():
             print("Distancia invalida!")
         except ValueError:
             print("Digite 5 ou 10")
+
+    while True:
+        try:
+            print("\nQual seu lote?")
+            print("1. Primeiro lote")
+            print("2. Segundo lote")
+            lote = int(input("Escolha uma opção: "))
+            if lote == 1 or lote == 2:
+                break
+            else:
+                print("Inválido!")
+        except ValueError:
+            print("\nDigite os numeros referente as opções!")
+    codigo = nome [0:3] + sobrenome [0:3] + str(idade)
+    print("\nCadastro realizado com sucesso!")
+    print("Comprovante de registro")
+    print(f"Nome do atleta: {nome}")
+    print(f"Código: {codigo}")
+    print(f"Distancia: {distancia}km")
+    print(f"total a se pagar")
+    print("Retornando ao menu...")
+    return lote, distancia
+
+
+def calcular_resultado():
+    while True:
+        try:
+            idade = int(input("qual sua idade: "))
+            if idade < 16:
+              print("Idade inválida! Tem de ter 16 anos ou mais.")
+            else:
+                break
+        except ValueError:
+            print("Erro: Digite apenas números inteiros.")
+
+    while True:
+            try:
+                distancia = int(input("Distancia da prova 5 ou 10km: "))
+                if distancia == 5 or distancia == 10:
+                    break
+                print("Distancia invalida!")
+            except ValueError:
+                print("Digite 5 ou 10")
 
     while True:
         tempo = input("Tempo da prova (HH:MM:SS): ").strip()
@@ -122,43 +178,12 @@ while True:
     opcao = menu_cadastrado()
 
     if opcao == "1":
-        print("Fazer inscrição")
-        nome = str(input("Digite seu nome: ")).upper()
-        sobrenome = str(input("Digite seu sobrenome: ")).upper()
-
-        while True:
-            idade = int(input("qual sua idade: "))
-            if idade < 16:
-                print("Idade inválida! Tem de ter 16 anos ou mais.")
-            else:
-                break
-
-        while True:
-            print("Qual a distância que você vai percorrer?")
-            print("\n1. 5km")
-            print("2. 10km")
-            distancia = int(input("Escolha uma opcão: "))
-            if distancia == 1 or distancia == 2:
-                break
-            else:
-                print("\nInválido!")
-
-        while True:
-            print("\nQual seu lote?")
-            print("1. Primeiro lote")
-            print("2. Segundo lote")
-            lote = int(input("Escolha uma opção: "))
-            if lote == 1 or lote == 2:
-                break
-            else:
-                print("Inválido!")
-
-        print("\nCadastro realizado com sucesso!")
-        print("Retornando ao menu...")
-
-    #ver o cadastro
-    elif opcao == "2":
-        print("Ver cadastro")
+        lote, distancia = fazer_inscricao()
+        total_a_pagar = valor_inscricao(lote, distancia)
+        total_inscricoes += 1
+        total_arrecadado += total_a_pagar
+        
+        print(f"Valor a pagar: R$ {total_a_pagar:.2f}")
 
     # calcular o resultado
     elif opcao == "3":
@@ -166,6 +191,8 @@ while True:
 
     elif opcao == "4":
         print("Sair do Sistema")
+        print(f"Total de inscrições: {total_inscricoes}")
+        print(f"Total arrecadado: {total_arrecadado}")
         break
 
     else:
