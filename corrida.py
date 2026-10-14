@@ -5,3 +5,5 @@ def menu_cadastrado():
     print("3. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
+while True:
+    
