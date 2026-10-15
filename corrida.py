@@ -61,7 +61,7 @@ def verificar_premiacao(idade, distancia, segundos):
 
     return segundos <= limite
 
-def valor_inscricao(lote, distancia):
+def valor_inscricao(lote, distancia, idade):
     """Calcula com base na escolha de lotes o valor que deve se pagar e se haverá acréscimos dependendo da distancia"""
     if lote == 1:
         preco_inicial = 80.00
@@ -71,7 +71,14 @@ def valor_inscricao(lote, distancia):
         preco_inicial = 0.00
     if distancia == 10:
         preco_inicial += 20
+    if idade >= 60:
+        preco_inicial *= 0.5
     return preco_inicial
+
+def gerar_codigo(nome, sobrenome,idade):
+    """Gera o código do corredor usando as tres primeiras letras do nome, sobrenome e idade"""
+    codigo = nome [0:3] + sobrenome [0:3] + str(idade)
+    return codigo
 
 #variáveis para armazenar o numero de usuarios e o total de faturamento
 total_inscricoes = 0
@@ -111,15 +118,18 @@ def fazer_inscricao():
                 print("Inválido!")
         except ValueError:
             print("\nDigite os numeros referente as opções!")
-    codigo = nome [0:3] + sobrenome [0:3] + str(idade)
+    total_a_pagar = valor_inscricao(lote,distancia,idade)
+    codigo = gerar_codigo(nome, sobrenome, idade)
+    categoria = calcular_categoria(idade)
     print("\nCadastro realizado com sucesso!")
     print("Comprovante de registro")
     print(f"Nome do atleta: {nome}")
     print(f"Código: {codigo}")
+    print(f"Categoria: {categoria}")
     print(f"Distancia: {distancia}km")
-    print(f"total a se pagar: {valor_inscricao(lote, distancia):.2f}")
+    print(f"total a se pagar: R${total_a_pagar:.2f}")
     print("Retornando ao menu...")
-    return lote, distancia
+    return lote, distancia, total_a_pagar
 
 
 def calcular_resultado():
@@ -181,8 +191,7 @@ def menu_cadastrado():
 while True:
     opcao = menu_cadastrado()
     if opcao == "1":
-        lote, distancia = fazer_inscricao()
-        total_a_pagar = valor_inscricao(lote, distancia)
+        lote, distancia, total_a_pagar = fazer_inscricao()
         total_inscricoes += 1
         total_arrecadado += total_a_pagar
 
@@ -193,7 +202,7 @@ while True:
     elif opcao == "3":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
-        print(f"Total arrecadado: {total_arrecadado}")
+        print(f"Total arrecadado: R${total_arrecadado:.2f}")
         break
 
     else:
