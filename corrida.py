@@ -1,5 +1,5 @@
-
 def calcular_categoria(idade):
+    """Determina com base na idade qual a categoria que o atleta pertence"""
     if idade >= 16 and idade <= 19:
         return "Juvenil"
     elif idade >= 20 and idade <= 39:
@@ -13,7 +13,7 @@ def calcular_categoria(idade):
 
 
 def tempo_para_segundos(tempo):
-    #retorna -1 se for ínvalido e converte  HH:MM:SS em segundos
+    """retorna -1 se for ínvalido e converte  HH:MM:SS em segundos"""
     if len(tempo) != 8 or tempo[2] != ":" or tempo[5] != ":":
         return -1
 
@@ -36,7 +36,7 @@ def tempo_para_segundos(tempo):
 
 
 def calcular_pace(segundos, distancia):
-    # Calcula e retorna o pace
+    """Calcula e retorna o pace"""
     pace_segundos = segundos // distancia
     minutos = pace_segundos // 60
     segundos_restantes = pace_segundos % 60
@@ -45,7 +45,7 @@ def calcular_pace(segundos, distancia):
 
 
 def verificar_premiacao(idade, distancia, segundos):
-    # retorna true se o corredor antigir o limite
+    """retorna true se o corredor antigir o limite"""
     categoria = calcular_categoria(idade)
 
     if categoria == "Juvenil":
@@ -60,8 +60,9 @@ def verificar_premiacao(idade, distancia, segundos):
         return False
 
     return segundos <= limite
-#o valor a se pagar para inscrição
+
 def valor_inscricao(lote, distancia):
+    """Calcula com base na escolha de lotes o valor que deve se pagar e se haverá acréscimos dependendo da distancia"""
     if lote == 1:
         preco_inicial = 80.00
     elif lote == 2:
@@ -71,10 +72,12 @@ def valor_inscricao(lote, distancia):
     if distancia == 10:
         preco_inicial += 20
     return preco_inicial
+
 #variáveis para armazenar o numero de usuarios e o total de faturamento
 total_inscricoes = 0
 total_arrecadado = 0.00
 def fazer_inscricao():
+    """cadastra o usuário e gera um codigo para o corredor além de informar o valor da inscrição"""
     nome = str(input("Digite seu nome: ")).strip().upper()
     sobrenome = str(input("Digite seu sobrenome: ")).strip().upper()
     while True:
@@ -114,12 +117,13 @@ def fazer_inscricao():
     print(f"Nome do atleta: {nome}")
     print(f"Código: {codigo}")
     print(f"Distancia: {distancia}km")
-    print(f"total a se pagar")
+    print(f"total a se pagar: {valor_inscricao(lote, distancia):.2f}")
     print("Retornando ao menu...")
     return lote, distancia
 
 
 def calcular_resultado():
+    """Pede os dados da prova e do usuário, calcula o desempenho, informa a categoria, a premiação e mostra o resultado final"""
     while True:
         try:
             idade = int(input("qual sua idade: "))
@@ -165,31 +169,28 @@ def calcular_resultado():
         print("Premiação: Não")
 
 def menu_cadastrado():
+    """Exibe o menu principal, recolhe a opção escolhida e retorna o resultado """
     print("\n--Menu de cadastrado--")
     print("\n1. Inscrição")
-    print("2. Ver cadastro")
-    print("3. Calcular resultado")
-    print("4. Sair")
+    print("2. Calcular resultado")
+    print("3. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
 
 while True:
     opcao = menu_cadastrado()
-
     if opcao == "1":
         lote, distancia = fazer_inscricao()
         total_a_pagar = valor_inscricao(lote, distancia)
         total_inscricoes += 1
         total_arrecadado += total_a_pagar
-        
-        print(f"Valor a pagar: R$ {total_a_pagar:.2f}")
 
-    # calcular o resultado
-    elif opcao == "3":
+    #calcular o resultado
+    elif opcao == "2":
         calcular_resultado()
 
-    elif opcao == "4":
+    elif opcao == "3":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
         print(f"Total arrecadado: {total_arrecadado}")
