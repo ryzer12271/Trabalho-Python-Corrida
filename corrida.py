@@ -192,12 +192,25 @@ def calcular_resultado():
     else:
         print("Premiação: Não")
 
+def listar_inscritos(corredores):
+    """Listar todos os corredores cadastrados"""
+    if not corredores:
+        print("Não tem nenhum corredor cadastrado...")
+        return
+    for corredor in corredores:
+        print(f"\nNome: {corredor['nome']} {corredor['sobrenome']}")
+        print(f"Código: {corredor['codigo']}")
+        print(f"Categoria: {corredor['categoria']}")
+        print(f"Distancia: {corredor['distancia']} km")
+
+
 def menu_cadastrado():
     """Exibe o menu principal, recolhe a opção escolhida e retorna o resultado """
     print("\n--Menu de cadastrado--")
     print("\n1. Inscrição")
     print("2. Calcular resultado")
-    print("3. Sair")
+    print("3. Lista de corredores")
+    print("4. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -216,6 +229,9 @@ while True:
         calcular_resultado()
 
     elif opcao == "3":
+        listar_inscritos(corredores)
+
+    elif opcao == "4":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
         print(f"Total arrecadado: R${total_arrecadado:.2f}")
