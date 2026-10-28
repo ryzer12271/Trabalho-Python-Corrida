@@ -80,11 +80,17 @@ def valor_inscricao(lote, distancia, idade):
     if idade >= 60:
         preco_inicial *= 0.5
     return preco_inicial
-
-def gerar_codigo(nome, sobrenome,idade):
+codigos_usados = set()
+def gerar_codigo(nome, sobrenome,idade, codigos_usados):
     """Gera o código do corredor usando as tres primeiras letras do nome, sobrenome e idade"""
-    codigo = nome [0:3] + sobrenome [0:3] + str(idade)
+    codigo_inicial = nome [0:3] + sobrenome [0:3] + str(idade)
+    codigo = codigo_inicial
+    numero = 2
+    while codigo in codigos_usados:
+        codigo = f"{codigo_inicial}--{numero}"
+        numero += 1
     return codigo
+
 def contar_categorias(corredores):
     contagem = {
         "Juvenil": 0,
@@ -101,7 +107,7 @@ def contar_categorias(corredores):
 total_inscricoes = 0
 total_arrecadado = 0.00
 corredores = []
-def fazer_inscricao():
+def fazer_inscricao(codigos_usados):
     """cadastra o usuário e gera um codigo para o corredor além de informar o valor da inscrição"""
     nome = str(input("Digite seu nome: ")).strip().upper()
     sobrenome = str(input("Digite seu sobrenome: ")).strip().upper()
@@ -138,7 +144,7 @@ def fazer_inscricao():
             print("\nDigite os numeros referente as opções!")
     
     total_a_pagar = valor_inscricao(lote,distancia,idade)
-    codigo = gerar_codigo(nome, sobrenome, idade)
+    codigo = gerar_codigo(nome, sobrenome, idade, codigos_usados)
     categoria = calcular_categoria(idade)
     print("\nCadastro realizado com sucesso!")
     print("Comprovante de registro")
@@ -173,7 +179,7 @@ def calcular_resultado():
     for corredor in corredores:
      if corredor["codigo"] == codigo:
       corredor_encontrado = corredor
-     break
+      break
 
     if corredor_encontrado is None:
         print("Erro: corredor não encontrado!")
@@ -211,6 +217,31 @@ def calcular_resultado():
     print(f"Pace{pace}")
     print(f"Premiação: {'Sim' if premiado else 'Não'}")
 
+def listar_inscritos(corredores):
+    """Listar todos os corredores cadastrados"""
+    if not corredores:
+        print("Não tem nenhum corredor cadastrado...")
+        return
+    for corredor in corredores:
+        print(f"\nNome: {corredor['nome']} {corredor['sobrenome']}")
+        print(f"Código: {corredor['codigo']}")
+        print(f"Categoria: {corredor['categoria']}")
+        print(f"Distancia: {corredor['distancia']} km")
+
+def buscar_codigo(corredores):
+    """Buscar e encontrar um código e verificar se ele está cadastrado ou não"""
+    while True:
+        codigo = input("Digite o código que procura: ").strip().upper()
+        for corredor in corredores:
+            if corredor["codigo"] == codigo:
+                print("Corredor encontrado!")
+                print(f"\nNome: {corredor['nome']} {corredor['sobrenome']}")
+                print(f"Categoria: {corredor['categoria']}")
+                print(f"Distancia: {corredor['distancia']} km")
+                return corredor
+        print("Código não encontrado...")
+        continue
+
 def menu_cadastrado():
     """Exibe o menu principal, recolhe a opção escolhida e retorna o resultado """
     print("\n--Menu de cadastrado--")
@@ -227,8 +258,9 @@ def menu_cadastrado():
 while True:
     opcao = menu_cadastrado()
     if opcao == "1":
-        corredor = fazer_inscricao()
+        corredor = fazer_inscricao(codigos_usados)
         corredores.append(corredor)
+        codigos_usados.add(corredor["codigo"])
         print(corredores)
         total_inscricoes += 1
         total_arrecadado += corredor["valor"]
