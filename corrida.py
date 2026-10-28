@@ -51,21 +51,64 @@ def calcular_pace(segundos, distancia):
 
 
 def verificar_premiacao(idade, distancia, segundos):
-    """retorna true se o corredor antigir o limite"""
     categoria = calcular_categoria(idade)
 
-    if categoria == "Juvenil":
-        limite = 25 * 60 if distancia == 5 else 52 * 60
-    elif categoria == "Adulto":
-        limite = 22 * 60 if distancia == 5 else 46 * 60
-    elif categoria == "Master":
-        limite = 25 * 60 if distancia == 5 else 52 * 60
-    elif categoria == "Veterano":
-        limite = 30 * 60 if distancia == 5 else 63 * 60
-    else:
-        return False
+    for nome_categoria, limite_5km, limite_10km in TEMPOS_LIMITE:
+        if nome_categoria == categoria:
+             if distancia == 5:
+                limite = limite_5km
+             elif distancia == 10:
+                limite = limite_10km
+             else:
+                return False
 
-    return segundos <= limite
+             return segundos <= limite
+
+    return False
+
+def listar_corredores_com_tempo(corredores):
+    """Retorna os corredores que já possuem tempo registrado."""
+
+    corredores_com_tempo = [
+        corredor for corredor in corredores
+        if corredor["tempo"] is not None
+    ]
+
+    for corredor in corredores_com_tempo:
+        print(
+            f"{corredor['nome']} {corredor['sobrenome']} - "
+            f"{corredor['tempo']}"
+        )
+
+    if not corredores_com_tempo:
+        print("Nenhum corredor possui tempo registrado.")
+
+    return corredores_com_tempo
+
+
+def listar_corredores_premiados(corredores):
+    """Retorna os corredores que atingiram o tempo-limite."""
+
+    corredores_premiados = [
+        corredor for corredor in corredores
+        if corredor.get("premiado") is True
+    ]
+
+    for corredor in corredores_premiados:
+        print(
+            f"{corredor['nome']} {corredor['sobrenome']} - "
+            f"{corredor['categoria']} - "
+            f"{corredor['distancia']} km"
+        )
+
+    if not corredores_premiados:
+        print("Nenhum corredor premiado até o momento.")
+
+    return corredores_premiados
+        
+
+
+
 
 def valor_inscricao(lote, distancia, idade):
     """Calcula com base na escolha de lotes o valor que deve se pagar e se haverá acréscimos dependendo da distancia"""
@@ -251,6 +294,9 @@ def menu_cadastrado():
     print("4. Buscar corredor pelo código")
     print("5. Contagem por categoria")
     print("6. Sair")
+    print("7. Listar corredores com tempo")
+    print("8. Listar corredores premiados")
+    print("9. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -279,11 +325,18 @@ while True:
         contagem = contar_categorias(corredores)
         for categoria, quantidade in contagem.items():
             print(f"\n{categoria}: {quantidade} inscritos")
-
     elif opcao == "6":
+        listar_corredores_com_tempo(corredores)
+
+
+    elif opcao == "7":
+        listar_corredores_premiados(corredores)
+
+    elif opcao == "8":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
         print(f"Total arrecadado: R${total_arrecadado:.2f}")
+
         break
 
     else:
