@@ -85,6 +85,17 @@ def gerar_codigo(nome, sobrenome,idade, codigos_usados):
         codigo = f"{codigo_inicial}--{numero}"
         numero += 1
     return codigo
+def contar_categorias(corredores):
+    contagem = {
+        "Juvenil": 0,
+        "Adulto": 0,
+        "Master": 0,
+        "Veterano": 0,
+    }
+    for corredor in corredores:
+        categoria = corredor["categoria"]
+        contagem[categoria] += 1
+    return contagem
 
 #variáveis para armazenar o numero de usuarios e o total de faturamento
 total_inscricoes = 0
@@ -232,7 +243,8 @@ def menu_cadastrado():
     print("2. Calcular resultado")
     print("3. Lista de corredores")
     print("4. Buscar corredor pelo código")
-    print("5. Sair")
+    print("5. Contagem por categoria")
+    print("6. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -258,6 +270,11 @@ while True:
         buscar_codigo(corredores)
 
     elif opcao == "5":
+        contagem = contar_categorias(corredores)
+        for categoria, quantidade in contagem.items():
+            print(f"\n{categoria}: {quantidade} inscritos")
+
+    elif opcao == "6":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
         print(f"Total arrecadado: R${total_arrecadado:.2f}")
