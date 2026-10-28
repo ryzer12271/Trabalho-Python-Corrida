@@ -83,6 +83,7 @@ def gerar_codigo(nome, sobrenome,idade):
 #variáveis para armazenar o numero de usuarios e o total de faturamento
 total_inscricoes = 0
 total_arrecadado = 0.00
+corredores = []
 def fazer_inscricao():
     """cadastra o usuário e gera um codigo para o corredor além de informar o valor da inscrição"""
     nome = str(input("Digite seu nome: ")).strip().upper()
@@ -118,6 +119,7 @@ def fazer_inscricao():
                 print("Inválido!")
         except ValueError:
             print("\nDigite os numeros referente as opções!")
+    
     total_a_pagar = valor_inscricao(lote,distancia,idade)
     codigo = gerar_codigo(nome, sobrenome, idade)
     categoria = calcular_categoria(idade)
@@ -129,7 +131,19 @@ def fazer_inscricao():
     print(f"Distancia: {distancia}km")
     print(f"total a se pagar: R${total_a_pagar:.2f}")
     print("Retornando ao menu...")
-    return lote, distancia, total_a_pagar
+    
+    corredor = {
+            "nome": nome,
+            "sobrenome": sobrenome,
+            "idade": idade,
+            "distancia": distancia,
+            "lote": lote,
+            "codigo": codigo,
+            "categoria": categoria,
+            "valor": total_a_pagar,
+            "tempo": None
+        }
+    return corredor
 
 
 def calcular_resultado():
@@ -191,9 +205,11 @@ def menu_cadastrado():
 while True:
     opcao = menu_cadastrado()
     if opcao == "1":
-        lote, distancia, total_a_pagar = fazer_inscricao()
+        corredor = fazer_inscricao()
+        corredores.append(corredor)
+        print(corredores)
         total_inscricoes += 1
-        total_arrecadado += total_a_pagar
+        total_arrecadado += corredor["valor"]
 
     #calcular o resultado
     elif opcao == "2":
