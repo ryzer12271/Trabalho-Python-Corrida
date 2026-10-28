@@ -105,6 +105,53 @@ def listar_corredores_premiados(corredores):
         print("Nenhum corredor premiado até o momento.")
 
     return corredores_premiados
+
+
+def relatorio_final(corredores, total_inscricoes, total_arrecadado):
+    print("\n--- RELATÓRIO FINAL DA CORRIDA ---")
+    print(f"Total de inscrições: {total_inscricoes}")
+    print(f"Total arrecadado: R${total_arrecadado:.2f}")
+
+
+    for distancia in(5,10):
+        corredores_distancia = [
+            corredor for corredor in corredores
+            if corredor["distancia"] == distancia
+            and corredor.get("tempo_segundos") is not None
+        ]
+
+        print(f"\n--- Provas de {distancia} km ---")
+
+        if not corredores_distancia:
+            print("Nenhum tempo foi registrado nessa distância")
+            continue
+
+        media = sum(
+            corredor["tempo_segundos"]
+            for corredor in corredores_distancia
+        ) / len(corredores_distancia)
+
+
+        horas = int(media // 3600)
+        minutos = int((media % 3600) // 60)
+        segundos = int(media % 60)
+
+        print(
+           f"Tempo médio "
+           f"{horas:02d}:{minutos:02d}:{segundos:02d}"
+        )
+
+        mais_rapido = min(
+            corredores_distancia,
+            key=lambda corredor : corredor["tempo_segundos"]
+        )
+
+        print(
+            f"Mais rápido: {mais_rapido['nome']}"
+            f"{mais_rapido['sobrenome']}"
+        )
+        print(f"Tempo: {mais_rapido['tempo']}")
+
         
 
 
@@ -293,10 +340,9 @@ def menu_cadastrado():
     print("3. Lista de corredores")
     print("4. Buscar corredor pelo código")
     print("5. Contagem por categoria")
-    print("6. Sair")
-    print("7. Listar corredores com tempo")
-    print("8. Listar corredores premiados")
-    print("9. Sair")
+    print("6. Listar corredores com tempo")
+    print("7. Listar corredores premiados")
+    print("8. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -333,9 +379,12 @@ while True:
         listar_corredores_premiados(corredores)
 
     elif opcao == "8":
-        print("Sair do Sistema")
-        print(f"Total de inscrições: {total_inscricoes}")
-        print(f"Total arrecadado: R${total_arrecadado:.2f}")
+        relatorio_final(
+            corredores,
+            total_inscricoes,
+            total_arrecadado
+        )
+        print("\nSaindo do Sistema...")
 
         break
 
