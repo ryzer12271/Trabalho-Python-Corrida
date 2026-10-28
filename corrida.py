@@ -1,3 +1,9 @@
+TEMPOS_LIMITE = (
+    ("Juvenil", 25 * 60, 52 * 60),
+    ("Adulto", 22 * 60, 46 * 60),
+    ("Master", 25 * 60, 52 * 60),
+    ("Veterano", 30 * 60, 63 * 60)
+)
 def calcular_categoria(idade):
     """Determina com base na idade qual a categoria que o atleta pertence"""
     if idade >= 16 and idade <= 19:
@@ -75,22 +81,16 @@ def valor_inscricao(lote, distancia, idade):
         preco_inicial *= 0.5
     return preco_inicial
 
-codigos_usados = set()
-def gerar_codigo(nome, sobrenome,idade, codigos_usados):
+def gerar_codigo(nome, sobrenome,idade):
     """Gera o código do corredor usando as tres primeiras letras do nome, sobrenome e idade"""
-    codigo_inicial = nome [0:3] + sobrenome [0:3] + str(idade)
-    codigo = codigo_inicial
-    numero = 2
-    while codigo in codigos_usados:
-        codigo = f"{codigo_inicial}--{numero}"
-        numero += 1
+    codigo = nome [0:3] + sobrenome [0:3] + str(idade)
     return codigo
 
 #variáveis para armazenar o numero de usuarios e o total de faturamento
 total_inscricoes = 0
 total_arrecadado = 0.00
 corredores = []
-def fazer_inscricao(codigos_usados):
+def fazer_inscricao():
     """cadastra o usuário e gera um codigo para o corredor além de informar o valor da inscrição"""
     nome = str(input("Digite seu nome: ")).strip().upper()
     sobrenome = str(input("Digite seu sobrenome: ")).strip().upper()
@@ -127,7 +127,7 @@ def fazer_inscricao(codigos_usados):
             print("\nDigite os numeros referente as opções!")
     
     total_a_pagar = valor_inscricao(lote,distancia,idade)
-    codigo = gerar_codigo(nome, sobrenome, idade, codigos_usados)
+    codigo = gerar_codigo(nome, sobrenome, idade)
     categoria = calcular_categoria(idade)
     print("\nCadastro realizado com sucesso!")
     print("Comprovante de registro")
@@ -153,86 +153,59 @@ def fazer_inscricao(codigos_usados):
 
 
 def calcular_resultado():
-    """Pede os dados da prova e do usuário, calcula o desempenho, informa a categoria, a premiação e mostra o resultado final"""
-    while True:
-        try:
-            idade = int(input("qual sua idade: "))
-            if idade < 16:
-              print("Idade inválida! Tem de ter 16 anos ou mais.")
-            else:
-                break
-        except ValueError:
-            print("Erro: Digite apenas números inteiros.")
+    #localiza um corredor cadastrado e registra seu resultado
 
-    while True:
-            try:
-                distancia = int(input("Distancia da prova 5 ou 10km: "))
-                if distancia == 5 or distancia == 10:
-                    break
-                print("Distancia invalida!")
-            except ValueError:
-                print("Digite 5 ou 10")
+    codigo = input("Digite o código do corredor: ").strip().upper()
 
+    corredor_encontrado = None
+
+    for corredor in corredores:
+     if corredor["codigo"] == codigo:
+      corredor_encontrado = corredor
+     break
+
+    if corredor_encontrado is None:
+        print("Erro: corredor não encontrado!")
+        return
     while True:
         tempo = input("Tempo da prova (HH:MM:SS): ").strip()
         total_segundos = tempo_para_segundos(tempo)
 
-        if total_segundos >= 0:
+        if total_segundos >=0:
             break
 
-        print("Tempo invalido! Use HH:MM:SS, por exemplo 00:21:30")
+        print("Tempo inválido! Use HH:MM:SS, exemplo 00:21:30.")
+
+    idade = corredor_encontrado["idade"]
+    distancia = corredor_encontrado["distancia"]
 
     categoria = calcular_categoria(idade)
     pace = calcular_pace(total_segundos, distancia)
-    premiado = verificar_premiacao(idade, distancia, total_segundos)
+    premiado = verificar_premiacao(
+        idade, distancia, total_segundos
+    )
+
+    #Salva o resultado no cadastro do corredor
+    corredor_encontrado["tempo"] = tempo
+    corredor_encontrado["tempo_segundos"] = total_segundos
+    corredor_encontrado["premiado"] = premiado
 
     print("\n-- Resultado da Corrida --")
+    print(f"Nome: {corredor_encontrado['nome']}")
+    print(f"Código: {codigo}")
     print(f"Categoria: {categoria}")
-    print(f"Distancia: {distancia} km")
+    print(f"Distância: {distancia}km")
     print(f"Tempo: {tempo}")
-    print(f"Tempo em Segundos: {total_segundos}")
-    print(f"Pace: {pace}")
-
-    if premiado:
-        print("Premiação: Sim")
-    else:
-        print("Premiação: Não")
-
-def listar_inscritos(corredores):
-    """Listar todos os corredores cadastrados"""
-    if not corredores:
-        print("Não tem nenhum corredor cadastrado...")
-        return
-    for corredor in corredores:
-        print(f"\nNome: {corredor['nome']} {corredor['sobrenome']}")
-        print(f"Código: {corredor['codigo']}")
-        print(f"Categoria: {corredor['categoria']}")
-        print(f"Distancia: {corredor['distancia']} km")
-        
-def buscar_codigo(corredores):
-    """Buscar e encontrar um código e verificar se ele está cadastrado ou não"""
-    while True:
-        codigo = input("Digite o código que procura: ").strip().upper()
-        for corredor in corredores:
-            if corredor["codigo"] == codigo:
-                print("Corredor encontrado!")
-                print(f"\nNome: {corredor['nome']} {corredor['sobrenome']}")
-                print(f"Categoria: {corredor['categoria']}")
-                print(f"Distancia: {corredor['distancia']} km")
-                return corredor
-        print("Código não encontrado...")
-        continue
-            
-        
+    print(f"Tempo em segundos: {total_segundos}")
+    print(f"Pace{pace}")
+    print(f"Premiação: {'Sim' if premiado else 'Não'}")
 
 def menu_cadastrado():
     """Exibe o menu principal, recolhe a opção escolhida e retorna o resultado """
     print("\n--Menu de cadastrado--")
     print("\n1. Inscrição")
     print("2. Calcular resultado")
-    print("3. Lista de corredores")
-    print("4. Buscar corredor pelo código")
-    print("5. Sair")
+    print("3. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -240,9 +213,8 @@ def menu_cadastrado():
 while True:
     opcao = menu_cadastrado()
     if opcao == "1":
-        corredor = fazer_inscricao(codigos_usados)
+        corredor = fazer_inscricao()
         corredores.append(corredor)
-        codigos_usados.add(corredor["codigo"])
         print(corredores)
         total_inscricoes += 1
         total_arrecadado += corredor["valor"]
@@ -252,12 +224,6 @@ while True:
         calcular_resultado()
 
     elif opcao == "3":
-        listar_inscritos(corredores)
-
-    elif opcao == "4":
-        buscar_codigo(corredores)
-
-    elif opcao == "5":
         print("Sair do Sistema")
         print(f"Total de inscrições: {total_inscricoes}")
         print(f"Total arrecadado: R${total_arrecadado:.2f}")
@@ -265,6 +231,85 @@ while True:
 
     else:
         print("Opção invalida!")
+
+
+
+
+
+
+def tempo_para_segundos(tempo):
+    
+
+    if len(tempo) != 8 or tempo[2] != ":" or tempo[5] != ":":
+        return -1
+
+    if not (
+        tempo[0:2].isdigit()
+        and tempo[3:5].isdigit()
+        and tempo[6:8].isdigit()
+    ):
+        return -1
+
+    horas = int(tempo[0:2])
+    minutos = int(tempo[3:5])
+    segundos = int(tempo[6:8])
+
+    if minutos > 59 or segundos > 59:
+        return -1
+
+    return horas * 3600 + minutos * 60 + segundos
+
+
+def calcular_pace(segundos, distancia):
+    #Calcular o pace medio em km
+
+    pace_segundos = segundos // distancia
+    minutos = pace_segundos // 60
+    segundos_restantes = pace_segundos % 60
+
+    return f"{minutos}'{segundos_restantes:02d}\"/km"
+
+
+
+def verificar_premiacao(idade, distancia, segundos):
+    categoria = calcular_categoria(idade)
+
+    for nome, limite_5km, limite_10km in TEMPOS_LIMITE:
+        if nome == categoria:
+            if distancia == 5:
+                limite = limite_5km
+            else:
+                limite = limite_10km
+
+            return segundos <= limite
+
+    return False
+
+
+
+    def valor_inscrição(lote, distancia, idade):
+        ##Calcular o preço da inscrição
+
+
+        if lote == 1:
+         preco = 80.00
+
+        else:
+         preco = 100.00
+
+        if distancia == 10:
+         preco += 20.00
+
+        if idade>= 60:
+            preco *= 0.5
+
+
+            return preco
+
+
+
+    
+
 
 
 
