@@ -332,6 +332,52 @@ def buscar_codigo(corredores):
         print("Código não encontrado...")
         continue
 
+def classificacao_geral(corredores):
+    '''Classifica os corredores pelo menor tempo em cada distancia'''
+
+    for distancia in (5,10):
+        corredores_distancia = []
+        for corredor in corredores:
+            if corredor["distancia"] == distancia:
+                if corredor.get("tempo_segundos")is not None:
+                    corredores_distancia.append(corredor)
+        for i in range(len(corredores_distancia)):
+            for j in range(i + 1, len(corredores_distancia)):
+                if corredores_distancia[j]["tempo_segundos"] < corredores_distancia[i]["tempo_segundos"]:
+                    auxiliar = corredores_distancia[i]
+                    corredores_distancia[i] = corredores_distancia[j]
+                    corredores_distancia[j] = auxiliar
+        print(f"Classificação geral: {distancia} km")
+        posicao = 1
+        for corredor in corredores_distancia:
+            print(f"{posicao}º-{corredor['nome']} {corredor['sobrenome']}")
+            print(f"Tempo: {corredor['tempo']}")
+            posicao += 1
+
+def podio_categoria(corredores):
+    categorias = ("Juvenil", "Adulto", "Master", "Veterano")
+    for distancia in (5,10):
+        for categoria in categorias:
+            corredores_categoria = []
+            for corredor in corredores:
+                if (corredor["distancia"] == distancia and corredor["categoria"] == categoria and corredor.get("tempo_segundos") is not None):
+                    corredores_categoria.append(corredor)
+            for i in range(len(corredores_categoria)):
+                for j in range(i + 1, len(corredores_categoria)):
+                    if corredores_categoria[j]["tempo_segundos"]< corredores_categoria[i]["tempo_segundos"]:
+                        auxiliar = corredores_categoria[i]
+                        corredores_categoria[i] = corredores_categoria[j]
+                        corredores_categoria[j] = auxiliar
+            print(f"\nPódio: {categoria} -- {distancia} km")
+            if not corredores_categoria:
+                print("Não existe corredor com tempo registrado...")
+            posicao = 1
+
+            for corredor in corredores_categoria[:3]:
+                print(f"{posicao}º - {corredor['nome']} {corredor['sobrenome']}")
+                print(f"Tempo: {corredor['tempo']}")
+                posicao += 1
+            
 def menu_cadastrado():
     """Exibe o menu principal, recolhe a opção escolhida e retorna o resultado """
     print("\n--Menu de cadastrado--")
@@ -342,7 +388,9 @@ def menu_cadastrado():
     print("5. Contagem por categoria")
     print("6. Listar corredores com tempo")
     print("7. Listar corredores premiados")
-    print("8. Sair")
+    print("8. Classificação geral")
+    print("9. Podio por categoria")
+    print("10. Sair")
     opcao = input("Escolha uma opção: ").strip()
     return opcao
 
@@ -379,6 +427,12 @@ while True:
         listar_corredores_premiados(corredores)
 
     elif opcao == "8":
+        classificacao_geral(corredores)
+
+    elif opcao == "9":
+        podio_categoria(corredores)
+
+    elif opcao == "10":
         relatorio_final(
             corredores,
             total_inscricoes,
