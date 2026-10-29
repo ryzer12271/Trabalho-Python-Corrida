@@ -94,9 +94,9 @@ Integrantes
 
 O projeto foi desenvolvido por dois integrantes do curso de Engenharia de Software:
 
-Integrante 1: [João Pedro de Souza Miranda] — [pcnjota]
+Integrante 1: [João Pedro de Souza Miranda] — [[pcnjota](https://github.com/pcnjota)]
 
-Integrante 2: [Erik Dos Santos Araújo] — [ryzer1227]
+Integrante 2: [Erik Dos Santos Araújo] — [[ryzer1227](https://github.com/ryzer12271)]
 
 Versões
 
